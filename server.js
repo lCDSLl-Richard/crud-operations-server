@@ -1,8 +1,8 @@
-const { urlencoded } = require("body-parser");
 const express = require("express");
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
 const config = require("./config.js");
+const { urlencoded } = require("body-parser");
+const { Schema } = mongoose;
 
 const app = express();
 const port = config.PORT;
@@ -21,19 +21,25 @@ const PersonSchema = new Schema({
 const Person = mongoose.model("Person", PersonSchema);
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the people API");
+  res.sendFile(__dirname + "/index.html");
 });
 
 app.get("/people", async (req, res) => {
-  const { name, mail } = req.query;
+  const { name, mail, year, id } = req.query;
 
   const filter = {};
 
   if (name) {
     filter.name = name;
   }
+  if (year) {
+    filter.date = { $gte: `${year}-01-01`, $lte: `${year}-12-31` };
+  }
   if (mail) {
     filter.mail = mail;
+  }
+  if (id) {
+    filter._id = id;
   }
 
   const people = await Person.find(filter);
@@ -48,8 +54,7 @@ app.post("/addPerson", (req, res) => {
 });
 
 app.patch("/editPerson", async (req, res) => {
-  const { id, name, date, mail } = req.query;
-  console.log(id);
+  const { id, name, date, mail } = req.body;
 
   if (!id) {
     res.send("No id");
