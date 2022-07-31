@@ -3,12 +3,14 @@ const mongoose = require("mongoose");
 const config = require("./config.js");
 const { urlencoded } = require("body-parser");
 const { Schema } = mongoose;
+const cors = require("cors");
 
 const app = express();
 const port = config.PORT;
 
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
+app.use(cors());
 
 mongoose.connect(config.DB);
 
